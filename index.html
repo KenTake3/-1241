@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>えいごたんごカード</title>
+  <style>
+    :root {
+      --primary: #4A90E2;
+      --accent: #FF6B6B;
+      --bg: #F0F4F8;
+      --card-bg: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 15px; }
+
+    header { width: 100%; max-width: 400px; text-align: center; margin-bottom: 15px; }
+    h1 { font-size: 1.4rem; color: #333; margin-bottom: 10px; }
+
+    /* フィルターボタン */
+    .filter-group { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+    .filter-btn { padding: 6px 14px; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+    .filter-btn.active { background: var(--primary); color: #fff; }
+
+    /* カードデザイン */
+    .card-container { width: 100%; max-width: 350px; height: 260px; perspective: 1000px; margin-bottom: 20px; }
+    .card { width: 100%; height: 100%; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; cursor: pointer; border: 3px solid #E1E8ED; }
+    
+    .badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; padding: 3px 10px; border-radius: 10px; font-weight: bold; }
+    .badge-bronze { background: #E67E22; color: #fff; }
+    .badge-g5 { background: #2ECC71; color: #fff; }
+
+    .emoji { font-size: 3.5rem; margin-bottom: 10px; }
+    .english { font-size: 1.8rem; font-weight: bold; color: #2C3E50; text-align: center; margin-bottom: 8px; word-break: break-word; }
+    .japanese { font-size: 1.2rem; color: var(--accent); font-weight: bold; min-height: 1.5rem; }
+    .hint { font-size: 0.8rem; color: #A0AEC0; margin-top: 10px; }
+
+    /* アクションボタン */
+    .controls { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 12px; }
+    .btn-row { display: flex; gap: 10px; justify-content: center; }
+
+    button.action-btn { flex: 1; padding: 14px; font-size: 1.1rem; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
+    button.action-btn:active { transform: scale(0.96); }
+
+    .btn-sound { background: #FFD166; color: #333; font-size: 1.2rem; }
+    .btn-nav { background: var(--primary); color: #fff; }
+    .btn-secondary { background: #CBD5E0; color: #2D3748; }
+
+    .progress { text-align: center; font-size: 0.9rem; color: #718096; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>えいご たんご学習</h1>
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="setFilter('all')">すべて</button>
+      <button class="filter-btn" onclick="setFilter('bronze')">ブロンズ</button>
+      <button class="filter-btn" onclick="setFilter('g5')">5級</button>
+    </div>
+  </header>
+
+  <div class="card-container">
+    <div class="card" onclick="toggleJapanese()">
+      <span id="badge" class="badge"></span>
+      <div id="emoji" class="emoji"></div>
+      <div id="english" class="english"></div>
+      <div id="japanese" class="japanese">タップで にほんご</div>
+      <div class="hint">💡 カードをタップで意味が出るよ</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="action-btn btn-sound" onclick="speakCurrentWord()">🔊 おとを きく</button>
+    <div class="btn-row">
+      <button class="action-btn btn-nav" onclick="prevWord()">まえへ</button>
+      <button class="action-btn btn-nav" onclick="nextWord()">つぎへ</button>
+    </div>
+    <div class="btn-row">
+      <button class="action-btn btn-secondary" onclick="shuffleWords()">🔀 シャッフル</button>
+    </div>
+    <div id="progress" class="progress">1 / 10</div>
+  </div>
+
+  <script>
+    // プリセット単語データ（ブロンズ＆5級）
+    const wordsPreset = [
+      // ブロンズレベル
+      { en: "apple", jp: "りんご", level: "bronze", emoji: "🍎" },
+      { en: "dog", jp: "いぬ", level: "bronze", emoji: "🐶" },
+      { en: "cat", jp: "ねこ", level: "bronze", emoji: "🐱" },
+      { en: "red", jp: "あか", level: "bronze", emoji: "🔴" },
+      { en: "blue", jp: "あお", level: "bronze", emoji: "🔵" },
+      { en: "milk", jp: "ぎゅうにゅう", level: "bronze", emoji: "🥛" },
+      { en: "run", jp: "はしる", level: "bronze", emoji: "🏃" },
+      { en: "happy", jp: "うれしい", level: "bronze", emoji: "😊" },
+      { en: "family", jp: "かぞく", level: "bronze", emoji: "👨‍👩‍👧" },
+      { en: "good morning", jp: "おはよう", level: "bronze", emoji: "🌅" },
+
+      // 5級レベル
+      { en: "library", jp: "としょかん", level: "g5", emoji: "📚" },
+      { en: "teacher", jp: "せんせい", level: "g5", emoji: "🧑‍🏫" },
+      { en: "student", jp: "せいと", level: "g5", emoji: "🎒" },
+      { en: "study", jp: "べんきょうする", level: "g5", emoji: "✏️" },
+      { en: "play tennis", jp: "テニスをする", level: "g5", emoji: "🎾" },
+      { en: "go to bed", jp: "ねる", level: "g5", emoji: "🛌" },
+      { en: "breakfast", jp: "あさごはん", level: "g5", emoji: "🥣" },
+      { en: "Sunday", jp: "にちようび", level: "g5", emoji: "📅" },
+      { en: "clean the room", jp: "へやをそうじする", level: "g5", emoji: "🧹" },
+      { en: "speak English", jp: "えいごをはなす", level: "g5", emoji: "🗣️" }
+    ];
+
+    let currentList = [...wordsPreset];
+    let currentIndex = 0;
+    let showJp = false;
+
+    function updateCard() {
+      const item = currentList[currentIndex];
+      document.getElementById('english').innerText = item.en;
+      document.getElementById('emoji').innerText = item.emoji || '🔤';
+      
+      const badge = document.getElementById('badge');
+      if(item.level === 'bronze') {
+        badge.innerText = 'ブロンズ';
+        badge.className = 'badge badge-bronze';
+      } else {
+        badge.innerText = '英検5級';
+        badge.className = 'badge badge-g5';
+      }
+
+      showJp = false;
+      document.getElementById('japanese').innerText = '❓（タップで表示）';
+      document.getElementById('japanese').style.color = '#A0AEC0';
+
+      document.getElementById('progress').innerText = `${currentIndex + 1} / ${currentList.length}`;
+    }
+
+    function toggleJapanese() {
+      const item = currentList[currentIndex];
+      showJp = !showJp;
+      const jpElement = document.getElementById('japanese');
+      if (showJp) {
+        jpElement.innerText = item.jp;
+        jpElement.style.color = 'var(--accent)';
+      } else {
+        jpElement.innerText = '❓（タップで表示）';
+        jpElement.style.color = '#A0AEC0';
+      }
+    }
+
+    function speakCurrentWord() {
+      const text = currentList[currentIndex].en;
+      window.speechSynthesis.cancel(); // 連続再生バグ防止
+      const uttr = new SpeechSynthesisUtterance(text);
+      uttr.lang = 'en-US';
+      uttr.rate = 0.8; // ゆっくりめで聴きやすく
+      window.speechSynthesis.speak(uttr);
+    }
+
+    function nextWord() {
+      if (currentIndex < currentList.length - 1) {
+        currentIndex++;
+        updateCard();
+        speakCurrentWord(); // めくったら自動発音
+      }
+    }
+
+    function prevWord() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCard();
+        speakCurrentWord();
+      }
+    }
+
+    function shuffleWords() {
+      for (let i = currentList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentList[i], currentList[j]] = [currentList[j], currentList[i]];
+      }
+      currentIndex = 0;
+      updateCard();
+    }
+
+    function setFilter(type) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (type === 'all') {
+        currentList = [...wordsPreset];
+      } else {
+        currentList = wordsPreset.filter(w => w.level === type);
+      }
+      currentIndex = 0;
+      updateCard();
+    }
+
+    // 初期化
+    updateCard();
+  </script>
+</body>
+</html>
