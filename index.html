@@ -5,48 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>えいごたんごカード</title>
   <style>
-    :root {
-      --primary: #4A90E2;
-      --accent: #FF6B6B;
-      --bg: #F0F4F8;
-      --card-bg: #FFFFFF;
-    }
-
+    :root { --primary: #4A90E2; --accent: #FF6B6B; --bg: #F0F4F8; --card-bg: #FFFFFF; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 15px; }
-
     header { width: 100%; max-width: 400px; text-align: center; margin-bottom: 15px; }
     h1 { font-size: 1.4rem; color: #333; margin-bottom: 10px; }
-
-    /* フィルターボタン */
     .filter-group { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
     .filter-btn { padding: 6px 14px; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
     .filter-btn.active { background: var(--primary); color: #fff; }
-
-    /* カードデザイン */
     .card-container { width: 100%; max-width: 350px; height: 260px; perspective: 1000px; margin-bottom: 20px; }
     .card { width: 100%; height: 100%; background: var(--card-bg); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; cursor: pointer; border: 3px solid #E1E8ED; }
-    
     .badge { position: absolute; top: 15px; left: 15px; font-size: 0.75rem; padding: 3px 10px; border-radius: 10px; font-weight: bold; }
     .badge-bronze { background: #E67E22; color: #fff; }
     .badge-g5 { background: #2ECC71; color: #fff; }
-
     .emoji { font-size: 3.5rem; margin-bottom: 10px; }
-    .english { font-size: 1.8rem; font-weight: bold; color: #2C3E50; text-align: center; margin-bottom: 8px; word-break: break-word; }
-    .japanese { font-size: 1.2rem; color: var(--accent); font-weight: bold; min-height: 1.5rem; }
+    .english { font-size: 1.7rem; font-weight: bold; color: #2C3E50; text-align: center; margin-bottom: 8px; word-break: break-word; }
+    .japanese { font-size: 1.2rem; color: var(--accent); font-weight: bold; min-height: 1.5rem; text-align: center; }
     .hint { font-size: 0.8rem; color: #A0AEC0; margin-top: 10px; }
-
-    /* アクションボタン */
     .controls { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 12px; }
     .btn-row { display: flex; gap: 10px; justify-content: center; }
-
     button.action-btn { flex: 1; padding: 14px; font-size: 1.1rem; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: transform 0.1s; }
     button.action-btn:active { transform: scale(0.96); }
-
     .btn-sound { background: #FFD166; color: #333; font-size: 1.2rem; }
     .btn-nav { background: var(--primary); color: #fff; }
     .btn-secondary { background: #CBD5E0; color: #2D3748; }
-
     .progress { text-align: center; font-size: 0.9rem; color: #718096; margin-top: 10px; }
   </style>
 </head>
@@ -84,31 +66,207 @@
   </div>
 
   <script>
-    // プリセット単語データ（ブロンズ＆5級）
     const wordsPreset = [
-      // ブロンズレベル
-      { en: "apple", jp: "りんご", level: "bronze", emoji: "🍎" },
-      { en: "dog", jp: "いぬ", level: "bronze", emoji: "🐶" },
-      { en: "cat", jp: "ねこ", level: "bronze", emoji: "🐱" },
+      // === ブロンズ (約90語) ===
+      { en: "hello", jp: "こんにちは", level: "bronze", emoji: "👋" },
+      { en: "good morning", jp: "おはよう", level: "bronze", emoji: "🌅" },
+      { en: "goodbye", jp: "さようなら", level: "bronze", emoji: "👋" },
+      { en: "thank you", jp: "ありがとう", level: "bronze", emoji: "✨" },
+      { en: "sorry", jp: "ごめんなさい", level: "bronze", emoji: "🙇" },
+      { en: "yes", jp: "はい", level: "bronze", emoji: "⭕" },
+      { en: "no", jp: "いいえ", level: "bronze", emoji: "❌" },
+      { en: "please", jp: "おねがいします", level: "bronze", emoji: "🙏" },
+      { en: "one", jp: "１", level: "bronze", emoji: "1️⃣" },
+      { en: "two", jp: "２", level: "bronze", emoji: "2️⃣" },
+      { en: "three", jp: "３", level: "bronze", emoji: "3️⃣" },
+      { en: "four", jp: "４", level: "bronze", emoji: "4️⃣" },
+      { en: "five", jp: "５", level: "bronze", emoji: "5️⃣" },
+      { en: "six", jp: "６", level: "bronze", emoji: "6️⃣" },
+      { en: "seven", jp: "７", level: "bronze", emoji: "7️⃣" },
+      { en: "eight", jp: "８", level: "bronze", emoji: "8️⃣" },
+      { en: "nine", jp: "９", level: "bronze", emoji: "9️⃣" },
+      { en: "ten", jp: "１０", level: "bronze", emoji: "🔟" },
       { en: "red", jp: "あか", level: "bronze", emoji: "🔴" },
       { en: "blue", jp: "あお", level: "bronze", emoji: "🔵" },
-      { en: "milk", jp: "ぎゅうにゅう", level: "bronze", emoji: "🥛" },
-      { en: "run", jp: "はしる", level: "bronze", emoji: "🏃" },
-      { en: "happy", jp: "うれしい", level: "bronze", emoji: "😊" },
+      { en: "yellow", jp: "きいろ", level: "bronze", emoji: "🟡" },
+      { en: "green", jp: "みどり", level: "bronze", emoji: "🟢" },
+      { en: "black", jp: "くろ", level: "bronze", emoji: "⚫" },
+      { en: "white", jp: "しろ", level: "bronze", emoji: "⚪" },
+      { en: "pink", jp: "ピンク", level: "bronze", emoji: "🌸" },
+      { en: "orange", jp: "オレンジいろ", level: "bronze", emoji: "🟠" },
       { en: "family", jp: "かぞく", level: "bronze", emoji: "👨‍👩‍👧" },
-      { en: "good morning", jp: "おはよう", level: "bronze", emoji: "🌅" },
+      { en: "father", jp: "おとうさん", level: "bronze", emoji: "👨" },
+      { en: "mother", jp: "おかあさん", level: "bronze", emoji: "👩" },
+      { en: "brother", jp: "あに / おとうと", level: "bronze", emoji: "👦" },
+      { en: "sister", jp: "あね / いもうと", level: "bronze", emoji: "👧" },
+      { en: "grandfather", jp: "おじいさん", level: "bronze", emoji: "👴" },
+      { en: "grandmother", jp: "おばあさん", level: "bronze", emoji: "👵" },
+      { en: "head", jp: "あたま", level: "bronze", emoji: "👤" },
+      { en: "eye", jp: "め", level: "bronze", emoji: "👁️" },
+      { en: "ear", jp: "みみ", level: "bronze", emoji: "👂" },
+      { en: "nose", jp: "はな", level: "bronze", emoji: "👃" },
+      { en: "mouth", jp: "くち", level: "bronze", emoji: "👄" },
+      { en: "hand", jp: "て", level: "bronze", emoji: "✋" },
+      { en: "foot", jp: "あし", level: "bronze", emoji: "🦶" },
+      { en: "dog", jp: "いぬ", level: "bronze", emoji: "🐶" },
+      { en: "cat", jp: "ねこ", level: "bronze", emoji: "🐱" },
+      { en: "bird", jp: "とり", level: "bronze", emoji: "🐦" },
+      { en: "fish", jp: "さかな", level: "bronze", emoji: "🐟" },
+      { en: "rabbit", jp: "うさぎ", level: "bronze", emoji: "🐰" },
+      { en: "mouse", jp: "ねずみ", level: "bronze", emoji: "🐭" },
+      { en: "cow", jp: "うし", level: "bronze", emoji: "🐮" },
+      { en: "horse", jp: "うま", level: "bronze", emoji: "🐴" },
+      { en: "pig", jp: "ぶた", level: "bronze", emoji: "🐷" },
+      { en: "elephant", jp: "ぞう", level: "bronze", emoji: "🐘" },
+      { en: "monkey", jp: "さる", level: "bronze", emoji: "🐒" },
+      { en: "bear", jp: "くま", level: "bronze", emoji: "🐻" },
+      { en: "lion", jp: "ライオン", level: "bronze", emoji: "🦁" },
+      { en: "apple", jp: "りんご", level: "bronze", emoji: "🍎" },
+      { en: "banana", jp: "バナナ", level: "bronze", emoji: "🍌" },
+      { en: "orange", jp: "オレンジ", level: "bronze", emoji: "🍊" },
+      { en: "grape", jp: "ぶどう", level: "bronze", emoji: "🍇" },
+      { en: "strawberry", jp: "いちご", level: "bronze", emoji: "🍓" },
+      { en: "melon", jp: "メロン", level: "bronze", emoji: "🍈" },
+      { en: "water", jp: "みず", level: "bronze", emoji: "💧" },
+      { en: "milk", jp: "ぎゅうにゅう", level: "bronze", emoji: "🥛" },
+      { en: "juice", jp: "ジュース", level: "bronze", emoji: "🧃" },
+      { en: "tea", jp: "おちゃ", level: "bronze", emoji: "🍵" },
+      { en: "coffee", jp: "コーヒー", level: "bronze", emoji: "☕" },
+      { en: "bread", jp: "パン", level: "bronze", emoji: "🍞" },
+      { en: "rice", jp: "ごはん", level: "bronze", emoji: "🍚" },
+      { en: "meat", jp: "にく", level: "bronze", emoji: "🥩" },
+      { en: "cake", jp: "ケーキ", level: "bronze", emoji: "🍰" },
+      { en: "ice cream", jp: "アイスクリーム", level: "bronze", emoji: "🍦" },
+      { en: "book", jp: "ほん", level: "bronze", emoji: "📖" },
+      { en: "pen", jp: "ペン", level: "bronze", emoji: "🖊️" },
+      { en: "pencil", jp: "えんぴつ", level: "bronze", emoji: "✏️" },
+      { en: "eraser", jp: "けしごむ", level: "bronze", emoji: "🧽" },
+      { en: "bag", jp: "かばん", level: "bronze", emoji: "🎒" },
+      { en: "desk", jp: "つくえ", level: "bronze", emoji: "🪑" },
+      { en: "chair", jp: "いす", level: "bronze", emoji: "🪑" },
+      { en: "bed", jp: "ベッド", level: "bronze", emoji: "🛏️" },
+      { en: "door", jp: "ドア", level: "bronze", emoji: "🚪" },
+      { en: "window", jp: "まど", level: "bronze", emoji: "🪟" },
+      { en: "cup", jp: "コップ", level: "bronze", emoji: "🥤" },
+      { en: "plate", jp: "おさら", level: "bronze", emoji: "🍽️" },
+      { en: "spoon", jp: "スプーン", level: "bronze", emoji: "🥄" },
+      { en: "fork", jp: "フォーク", level: "bronze", emoji: "🍴" },
 
-      // 5級レベル
-      { en: "library", jp: "としょかん", level: "g5", emoji: "📚" },
+      // === 英検5級 (約140語) ===
+      { en: "I", jp: "わたしは", level: "g5", emoji: "🙋" },
+      { en: "you", jp: "あなたは", level: "g5", emoji: "👉" },
+      { en: "he", jp: "かれは", level: "g5", emoji: "👨" },
+      { en: "she", jp: "かのじょは", level: "g5", emoji: "👩" },
+      { en: "we", jp: "わたしたちは", level: "g5", emoji: "🧑‍🤝‍🧑" },
+      { en: "they", jp: "かれらは", level: "g5", emoji: "👥" },
+      { en: "this", jp: "これは", level: "g5", emoji: "👇" },
+      { en: "that", jp: "あれは", level: "g5", emoji: "👆" },
+      { en: "what", jp: "なに", level: "g5", emoji: "❓" },
+      { en: "who", jp: "だれ", level: "g5", emoji: "👤" },
+      { en: "when", jp: "いつ", level: "g5", emoji: "⏰" },
+      { en: "where", jp: "どこ", level: "g5", emoji: "📍" },
+      { en: "how", jp: "どうやって", level: "g5", emoji: "🤔" },
+      { en: "am", jp: "〜です（Iのとき）", level: "g5", emoji: "✨" },
+      { en: "is", jp: "〜です（He/She/Itのとき）", level: "g5", emoji: "✨" },
+      { en: "are", jp: "〜です（You/We/Theyのとき）", level: "g5", emoji: "✨" },
+      { en: "play", jp: "する / あそぶ", level: "g5", emoji: "🎮" },
+      { en: "like", jp: "すき", level: "g5", emoji: "❤️" },
+      { en: "have", jp: "もっている", level: "g5", emoji: "🤲" },
+      { en: "run", jp: "はしる", level: "g5", emoji: "🏃" },
+      { en: "walk", jp: "あるく", level: "g5", emoji: "🚶" },
+      { en: "swim", jp: "およぐ", level: "g5", emoji: "🏊" },
+      { en: "study", jp: "べんきょうする", level: "g5", emoji: "✏️" },
+      { en: "read", jp: "よむ", level: "g5", emoji: "📖" },
+      { en: "write", jp: "かく", level: "g5", emoji: "✍️" },
+      { en: "speak", jp: "はなす", level: "g5", emoji: "🗣️" },
+      { en: "listen", jp: "きく", level: "g5", emoji: "👂" },
+      { en: "watch", jp: "みる（動くもの）", level: "g5", emoji: "📺" },
+      { en: "look", jp: "みる（視線を向ける）", level: "g5", emoji: "👀" },
+      { en: "see", jp: "みえる / あう", level: "g5", emoji: "👁️" },
+      { en: "eat", jp: "たべる", level: "g5", emoji: "🍽️" },
+      { en: "drink", jp: "のむ", level: "g5", emoji: "🥤" },
+      { en: "go", jp: "いく", level: "g5", emoji: "🚶‍♂️" },
+      { en: "come", jp: "くる", level: "g5", emoji: "🚶‍♀️" },
+      { en: "make", jp: "つくる", level: "g5", emoji: "🔨" },
+      { en: "take", jp: "とる / のる", level: "g5", emoji: "📸" },
+      { en: "use", jp: "つかう", level: "g5", emoji: "🔧" },
+      { en: "know", jp: "しっている", level: "g5", emoji: "💡" },
+      { en: "help", jp: "てつだう / たすける", level: "g5", emoji: "🤝" },
+      { en: "wash", jp: "あらう", level: "g5", emoji: "🧼" },
+      { en: "clean", jp: "そうじする", level: "g5", emoji: "🧹" },
+      { en: "cook", jp: "りょうりする", level: "g5", emoji: "🍳" },
+      { en: "sleep", jp: "ねむる", level: "g5", emoji: "😴" },
+      { en: "get", jp: "える / つく", level: "g5", emoji: "🎁" },
+      { en: "school", jp: "がっこう", level: "g5", emoji: "🏫" },
       { en: "teacher", jp: "せんせい", level: "g5", emoji: "🧑‍🏫" },
       { en: "student", jp: "せいと", level: "g5", emoji: "🎒" },
-      { en: "study", jp: "べんきょうする", level: "g5", emoji: "✏️" },
-      { en: "play tennis", jp: "テニスをする", level: "g5", emoji: "🎾" },
+      { en: "classroom", jp: "きょうしつ", level: "g5", emoji: "🚪" },
+      { en: "math", jp: "さんすう / すうがく", level: "g5", emoji: "🧮" },
+      { en: "science", jp: "りか", level: "g5", emoji: "🔬" },
+      { en: "history", jp: "れきし", level: "g5", emoji: "📜" },
+      { en: "music", jp: "おんがく", level: "g5", emoji: "🎵" },
+      { en: "art", jp: "ずこう / びじゅつ", level: "g5", emoji: "🎨" },
+      { en: "English", jp: "えいご", level: "g5", emoji: "🔤" },
+      { en: "house", jp: "いえ（建物）", level: "g5", emoji: "🏠" },
+      { en: "home", jp: "いえ（家庭）", level: "g5", emoji: "🏡" },
+      { en: "room", jp: "へや", level: "g5", emoji: "🚪" },
+      { en: "kitchen", jp: "だいどころ", level: "g5", emoji: "🍳" },
+      { en: "bathroom", jp: "おふろ / トイレ", level: "g5", emoji: "🛁" },
+      { en: "park", jp: "こうえん", level: "g5", emoji: "🛝" },
+      { en: "station", jp: "えき", level: "g5", emoji: "🚉" },
+      { en: "hospital", jp: "びょういん", level: "g5", emoji: "🏥" },
+      { en: "library", jp: "としょかん", level: "g5", emoji: "📚" },
+      { en: "store", jp: "おみせ", level: "g5", emoji: "🏪" },
+      { en: "zoo", jp: "どうぶつえん", level: "g5", emoji: "🦁" },
+      { en: "morning", jp: "あさ", level: "g5", emoji: "🌅" },
+      { en: "afternoon", jp: "ごご", level: "g5", emoji: "🏙️" },
+      { en: "evening", jp: "ゆうがた", level: "g5", emoji: "🌇" },
+      { en: "night", jp: "よる", level: "g5", emoji: "🌃" },
+      { en: "today", jp: "きょう", level: "g5", emoji: "📅" },
+      { en: "tomorrow", jp: "あした", level: "g5", emoji: "📅" },
+      { en: "yesterday", jp: "きのう", level: "g5", emoji: "📅" },
+      { en: "spring", jp: "はる", level: "g5", emoji: "🌸" },
+      { en: "summer", jp: "なつ", level: "g5", emoji: "🌻" },
+      { en: "fall / autumn", jp: "あき", level: "g5", emoji: "🍁" },
+      { en: "winter", jp: "ふゆ", level: "g5", emoji: "⛄" },
+      { en: "Sunday", jp: "にちようび", level: "g5", emoji: "🗓️" },
+      { en: "Monday", jp: "げつようび", level: "g5", emoji: "🗓️" },
+      { en: "Tuesday", jp: "かようび", level: "g5", emoji: "🗓️" },
+      { en: "Wednesday", jp: "すいようび", level: "g5", emoji: "🗓️" },
+      { en: "Thursday", jp: "もくようび", level: "g5", emoji: "🗓️" },
+      { en: "Friday", jp: "きんようび", level: "g5", emoji: "🗓️" },
+      { en: "Saturday", jp: "どようび", level: "g5", emoji: "🗓️" },
+      { en: "big", jp: "おおきい", level: "g5", emoji: "🐘" },
+      { en: "small", jp: "ちいさい", level: "g5", emoji: "🐭" },
+      { en: "tall", jp: "せがたかい", level: "g5", emoji: "🦒" },
+      { en: "short", jp: "みじかい / せがひくい", level: "g5", emoji: "📏" },
+      { en: "long", jp: "ながい", level: "g5", emoji: "📏" },
+      { en: "new", jp: "あたらしい", level: "g5", emoji: "🆕" },
+      { en: "old", jp: "ふるい", level: "g5", emoji: "🕰️" },
+      { en: "good", jp: "よい", level: "g5", emoji: "👍" },
+      { en: "bad", jp: "わるい", level: "g5", emoji: "👎" },
+      { en: "happy", jp: "うれしい / しあわせな", level: "g5", emoji: "😊" },
+      { en: "sad", jp: "かなしい", level: "g5", emoji: "😢" },
+      { en: "hot", jp: "あつい", level: "g5", emoji: "🔥" },
+      { en: "cold", jp: "さむい / つめたい", level: "g5", emoji: "❄️" },
+      { en: "beautiful", jp: "うつくしい", level: "g5", emoji: "✨" },
+      { en: "cute", jp: "かわいい", level: "g5", emoji: "🥰" },
+      { en: "very", jp: "とても", level: "g5", emoji: "❗" },
+      { en: "always", jp: "いつも", level: "g5", emoji: "🔄" },
+      { en: "often", jp: "よく（しばしば）", level: "g5", emoji: "🔁" },
+      { en: "sometimes", jp: "ときどき", level: "g5", emoji: "⏱️" },
+      { en: "too", jp: "〜もまた / 〜すぎる", level: "g5", emoji: "➕" },
+      { en: "get up", jp: "おきる", level: "g5", emoji: "⏰" },
       { en: "go to bed", jp: "ねる", level: "g5", emoji: "🛌" },
-      { en: "breakfast", jp: "あさごはん", level: "g5", emoji: "🥣" },
-      { en: "Sunday", jp: "にちようび", level: "g5", emoji: "📅" },
-      { en: "clean the room", jp: "へやをそうじする", level: "g5", emoji: "🧹" },
-      { en: "speak English", jp: "えいごをはなす", level: "g5", emoji: "🗣️" }
+      { en: "go to school", jp: "がっこうにいく", level: "g5", emoji: "🚶‍♂️" },
+      { en: "listen to", jp: "〜をきく", level: "g5", emoji: "🎧" },
+      { en: "look at", jp: "〜をみる", level: "g5", emoji: "👀" },
+      { en: "play the piano", jp: "ピアノをひく", level: "g5", emoji: "🎹" },
+      { en: "play soccer", jp: "サッカーをする", level: "g5", emoji: "⚽" },
+      { en: "read a book", jp: "ほんをよむ", level: "g5", emoji: "📖" },
+      { en: "watch TV", jp: "テレビをみる", level: "g5", emoji: "📺" },
+      { en: "do homework", jp: "しゅくだいをする", level: "g5", emoji: "📝" },
+      { en: "take a bath", jp: "おふろにはいる", level: "g5", emoji: "🛀" }
     ];
 
     let currentList = [...wordsPreset];
@@ -119,7 +277,6 @@
       const item = currentList[currentIndex];
       document.getElementById('english').innerText = item.en;
       document.getElementById('emoji').innerText = item.emoji || '🔤';
-      
       const badge = document.getElementById('badge');
       if(item.level === 'bronze') {
         badge.innerText = 'ブロンズ';
@@ -128,11 +285,9 @@
         badge.innerText = '英検5級';
         badge.className = 'badge badge-g5';
       }
-
       showJp = false;
       document.getElementById('japanese').innerText = '❓（タップで表示）';
       document.getElementById('japanese').style.color = '#A0AEC0';
-
       document.getElementById('progress').innerText = `${currentIndex + 1} / ${currentList.length}`;
     }
 
@@ -151,10 +306,10 @@
 
     function speakCurrentWord() {
       const text = currentList[currentIndex].en;
-      window.speechSynthesis.cancel(); // 連続再生バグ防止
+      window.speechSynthesis.cancel();
       const uttr = new SpeechSynthesisUtterance(text);
       uttr.lang = 'en-US';
-      uttr.rate = 0.8; // ゆっくりめで聴きやすく
+      uttr.rate = 0.8;
       window.speechSynthesis.speak(uttr);
     }
 
@@ -162,7 +317,7 @@
       if (currentIndex < currentList.length - 1) {
         currentIndex++;
         updateCard();
-        speakCurrentWord(); // めくったら自動発音
+        speakCurrentWord();
       }
     }
 
@@ -186,7 +341,6 @@
     function setFilter(type) {
       document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
-
       if (type === 'all') {
         currentList = [...wordsPreset];
       } else {
@@ -196,7 +350,6 @@
       updateCard();
     }
 
-    // 初期化
     updateCard();
   </script>
 </body>
