@@ -66,6 +66,12 @@
   </div>
 
   <script>
+    // --- 音声リストを事前に読み込むおまじない（iOS対策） ---
+    let voices = [];
+    window.speechSynthesis.onvoiceschanged = () => {
+      voices = window.speechSynthesis.getVoices();
+    };
+
     const wordsPreset = [
       // === ブロンズ (約90語) ===
       { en: "hello", jp: "こんにちは", level: "bronze", emoji: "👋" },
@@ -310,6 +316,17 @@
       const uttr = new SpeechSynthesisUtterance(text);
       uttr.lang = 'en-US';
       uttr.rate = 0.8;
+
+      // --- 追加：確実に英語の声をセットする処理 ---
+      if (voices.length === 0) {
+        voices = window.speechSynthesis.getVoices();
+      }
+      // スマホの中にある「英語(en)」の声を探し出してセットする
+      const englishVoice = voices.find(v => v.lang.indexOf('en-') !== -1) || voices.find(v => v.lang === 'en');
+      if (englishVoice) {
+        uttr.voice = englishVoice;
+      }
+
       window.speechSynthesis.speak(uttr);
     }
 
